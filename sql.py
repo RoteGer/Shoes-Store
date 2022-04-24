@@ -7,7 +7,7 @@ import PySimpleGUI as sg
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="R0549257503r",
+    password="PassPass",
     database="shoesstore",
 )
 print(mydb)

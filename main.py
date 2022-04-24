@@ -96,3 +96,5 @@ while True:
         Add_Window()
 
 window.close()
+
+print("hi")

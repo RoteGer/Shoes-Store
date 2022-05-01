@@ -1,5 +1,3 @@
-from asyncio.windows_events import NULL
-
 import mysql.connector
 from tkinter import *
 import PySimpleGUI as sg
@@ -10,32 +8,35 @@ mydb = mysql.connector.connect(
     password="R0549257503r",
     database="shoesstore",
 )
-print(mydb)
-## showing the tables in MySQL
+
 mycursor = mydb.cursor()
 
 
 ## SEARCH
-def search_sql(model, size=[], color=[]):
+def search_sql(model, size=None, color=None):
     # if the user did not input the size and color, we return all data for this model
+    #if color is []:
+     #   color = []
+    #if size is []:
+     #   size = []
     if size == [] and color == []:
-        mycursor.execute("SELECT * FROM instock where NumModel = %s", (model,))
+        mycursor.execute("SELECT * FROM inventory where NumModel = %s", (model,))
 
     # if the user did not input size (but did input color)
     elif size == []:
         color_ = color[0]
-        mycursor.execute("SELECT * FROM instock where NumModel = %s and color = %s", (model, color_))
+        mycursor.execute("SELECT * FROM inventory where NumModel = %s and color = %s", (model, color_))
 
     # if the user did not input color (but did input size)
     elif color == []:
         size_ = size[0]
-        mycursor.execute("SELECT * FROM instock where NumModel = %s and Size = %s", (model, size_))
+        mycursor.execute("SELECT * FROM inventory where NumModel = %s and Size = %s", (model, size_))
 
     else:
         size_ = size[0]
         color_ = color[0]
 
-        mycursor.execute("SELECT * FROM instock WHERE NumModel = %s AND size = %s AND color = %s",
+        mycursor.execute("SELECT * FROM inventory WHERE NumModel = %s AND size = %s AND color = %s",
                          (model, size_, color_))
 
     # showing the table data
@@ -108,16 +109,16 @@ def Add_sql(model, color, floor, season):
             up = 0
             for i in range(all_sizes):
                 if values_add_sizes[up + 36] != 0:
-                    inserting_to_stock = "INSERT INTO instock (NumModel, Size, color, amount, Floor, Season)" \
-                                         " VALUES (%s, %s, %s, %s, %s, %s)"
+                    inserting_to_inventory = "INSERT INTO inventory (NumModel, Size, Color, Amount, Floor, Season)" \
+                                             " VALUES (%s, %s, %s, %s, %s, %s)"
                     val = (model, up + 36, color, values_add_sizes[up + 36], floor, season)
-                    mycursor.execute(inserting_to_stock, val)
+                    mycursor.execute(inserting_to_inventory, val)
 
                     mydb.commit()
                 up += 0.5
 
             layout_confirmation = [  # Confirmation window after inserting
-                [sg.Text("הפריטים הוספו לבקשתך", size=(20, 2), text_color="black", font=('Arial', 15))],
+                [sg.Text("הפריטים הוספו לבקשתך", size=(20, 2), text_color="black", font=('Tahoma', 15))],
                 [sg.Button(button_text="אישור", size=(5, 1), pad=(10, 20), button_color="blue")]]
             confirmation_window = sg.Window("הפריטים הוספו", layout_confirmation, element_justification='center',
                                             margins=(50, 25))
@@ -134,3 +135,37 @@ def Add_sql(model, color, floor, season):
 
         Add_Sizes_Window.close()
     Add_Sizes_Window.close()
+
+
+# Adding the costumer to "Buyer" table and deleting the shoes he bought from "inventory" table
+def Buyer_sql(model, size, color, firstname=None, lastname=None, phone=None):
+    # inserting the costumer
+    inserting_to_Buyer = "INSERT INTO buyer (FirstName, LastName, PhoneNumber) VALUES (%s, %s, %s)"
+    val = (firstname, lastname, phone)
+    mycursor.execute(inserting_to_Buyer, val)
+
+    mydb.commit()
+
+    layout_confirmation = [  # Confirmation window after inserting
+        [sg.Text("בוצע", size=(20, 2), text_color="black", font=('Tahoma', 15))],
+        [sg.Button(button_text="אישור", size=(5, 1), pad=(10, 20), button_color="blue")]]
+    confirmation_window = sg.Window("הפריטים הוספו", layout_confirmation, element_justification='center',
+                                    margins=(50, 25))
+    while True:
+        confirm_event, confirm_values = confirmation_window.read()
+        if confirm_event in (sg.WIN_CLOSED, "אישור"):
+            break
+    confirmation_window.close()
+
+    # updating the shoe from inventory
+    purchased_shoe = "SELECT Amount FROM inventory WHERE NumModel = %s and size = %s and color = %s"
+    shoe_val = (model, size, color)
+    mycursor.execute(purchased_shoe, shoe_val)  # Getting the Amount value
+    Amount = mycursor.fetchall()
+    update_inventory_sql = "UPDATE inventory SET Amount = %s WHERE Amount in " \
+                           "(SELECT * FROM (SELECT Amount FROM inventory WHERE " \
+                           "NumModel = %s and Size = %s and Color = %s) as Amount) "
+    update_val = (Amount[0][0] - 1, model, size, color)
+    mycursor.execute(update_inventory_sql, update_val)
+
+    mydb.commit()

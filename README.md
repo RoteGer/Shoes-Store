@@ -6,13 +6,13 @@ The idea behind this project was to make a system that will optimize the managem
 
 
 ## Stages of work
-#### 1. Building ERD (Entity–relationship diagram)
+### 1. Building ERD (Entity–relationship diagram)
 ![image](https://user-images.githubusercontent.com/76396600/169877238-9e87acc5-4560-41db-b0dd-19bb2d1135b1.png)
 
-#### 2. Convert to tables
+### 2. Convert to tables
 <img width="615" alt="image" src="https://user-images.githubusercontent.com/76396600/169877665-956954c6-9cfa-4fee-8991-d093a439b820.png">
 
-#### 3. Design and construction of the user interface
+### 3. Design and construction of the user interface
 * Home page:
 
 ![image](https://user-images.githubusercontent.com/76396600/169878054-a38029fa-17ac-4ec2-b243-d42baa8468f1.png)

@@ -2,8 +2,8 @@
 # Shoes store management system 
     using Python and MySQL
 
-this project was made during of the ‘Data Bases’ course as a part of computer science bachelor studies.
-The idea behind this project was to make a system that will optimize the management in a specific shoes store.
+This project was made during academic databases course in order to enrich our knowledge.
+The idea behind this project was to make a system that will optimize and facilitate the management in a specific shoes store.
 
 ## Stages of work
 ### 1. Building ERD (Entity–relationship diagram)
